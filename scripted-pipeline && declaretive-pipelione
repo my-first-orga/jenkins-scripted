@@ -6,7 +6,7 @@ jenkins --> select pipeline job --> pipeline syntax--> global variable reference
 
 node
 {
-   echo "git job name: ${env.JOB_NAME}"
+   echo "jenkins job name: ${env.JOB_NAME}"
    echo "build number is: ${env.BUILD_NUMBER}"
    echo "node name is: ${env.NODE_NAME}"
 }
