@@ -44,18 +44,17 @@ node {
    echo "build number is: ${env.BUILD_NUMBER}"
    echo "node name is: ${env.NODE_NAME}"
     
-    def mavenHome=tool name: "maven3.9.9"
+    def mavenHome=tool name: "maven"
 
     try {
 
 	stage('git checkout')
 	{
-      git branch: 'development', credentialsId: '8d341570-e046-4d2c-8060-33c3d5d493f7', url: 'https://github.com/gangavaramdevops/maven-web-app-project-kk-funda.git'
+    notifyBuild('started')
+    
+     git branch: 'dev', credentialsId: '28ff8622-525e-437d-b715-56dc88964c44', url: 'https://github.com/my-first-orga/deploye-war-tomcat.git' 
 	}
-	stage('compile')
-	{
-    sh  "${mavenHome}/bin/mvn compile"
-	}
+	
 	stage('Build')
 	{
     sh  "${mavenHome}/bin/mvn clean package"
@@ -72,9 +71,9 @@ node {
         echo "Deploying WAR file using curl..."
 
         sh """
-            curl -u kkfunda:kkfunda \
-            --upload-file /var/lib/jenkins/workspace/jio-scripted-way-pipeline-develoment/target/maven-web-application.war \
-            "http://3.108.194.157:8080/manager/text/deploy?path=/maven-web-application&update=true"
+        curl -u admin:admin \
+            --upload-file /var/lib/jenkins/workspace/scripted-job/target/maven-web-application.war \
+            "http://44.201.155.191:8080/manager/text/deploy?path=/maven-web-application&update=true"
         """
     }
 
@@ -120,7 +119,6 @@ def notifyBuild(String buildStatus = 'STARTED') {
 
 
 
-
 NOTE: To display the Build started message, pls call notifyBuild('STARTED') before checkout stage.
 
 
@@ -133,13 +131,14 @@ pipeline {
     agent any 
 tools
 {
-  maven "maven3.9.9"
+  maven "maven"
 }
 
     stages {
         stage('checkout stage') { 
             steps {
-           git branch: 'development', credentialsId: '8d341570-e046-4d2c-8060-33c3d5d493f7', url: 'https://github.com/gangavaramdevops/maven-web-app-project-kk-funda.git'
+             notifyBuild('started')
+   git branch: 'dev', credentialsId: '28ff8622-525e-437d-b715-56dc88964c44', url: 'https://github.com/my-first-orga/deploye-war-tomcat.git' 
             }
         }
             stage('Build') { 
@@ -164,9 +163,9 @@ tools
 		echo "Deploying WAR file using curl..."
 
         sh """
-            curl -u kkfunda:kkfunda \
-            --upload-file /var/lib/jenkins/workspace/jio-scripted-way-pipeline-develoment/target/maven-web-application.war \
-            "http://3.108.194.157:8080/manager/text/deploy?path=/maven-web-application&update=true"
+            curl -u admi:admin \
+            --upload-file /var/lib/jenkins/workspace/scripted-job/target/maven-web-application.war \
+            "http://44.201.155.191:8080/manager/text/deploy?path=/maven-web-application&update=true"
         """
          
           }
@@ -205,8 +204,12 @@ def notifyBuild(String buildStatus = 'STARTED') {
     color = 'RED'
     colorCode = '#FF0000'
   }
+  def slacknoti = ['#spy', '#developer']
 
-  // Send notifications
-  slackSend (color: colorCode, message: summary, channel: '#airtel-dev')
+  for (channel in slacknoti) {
+
+    slackSend (color: colorCode, message: summary, channel: channel)
+  }
+
+
 }
-
